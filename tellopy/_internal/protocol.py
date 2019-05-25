@@ -39,7 +39,7 @@ FlipLeft = 1
 #FlipBack flips backwards.
 FlipBack = 2
 #FlipRight flips to the right.
-FlipRight = 3
+lipRight = 3
 #FlipForwardLeft flips forwards and to the left.
 FlipForwardLeft = 4
 #FlipBackLeft flips backwards and to the left.

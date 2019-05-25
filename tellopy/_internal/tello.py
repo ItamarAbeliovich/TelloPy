@@ -5,6 +5,7 @@ import datetime
 import struct
 import sys
 import os
+from scapy.all import *
 
 from . import crc
 from . import logger
@@ -60,8 +61,10 @@ class Tello(object):
     LOG_DEBUG = logger.LOG_DEBUG
     LOG_ALL = logger.LOG_ALL
 
-    def __init__(self, port=9000):
+    def __init__(self, port=9000, spoof_addr='192.168.0.2'):
         self.tello_addr = ('192.168.10.1', 8889)
+        self.spoof_addr = spoof_addr
+        self.base_pkt = IP(src=self.spoof_addr, dst=self.tello_addr[0]) / UDP(sport=port, dport=self.tello_addr[1])
         self.debug = False
         self.pkt_seq_num = 0x01e4
         self.port = port
@@ -466,7 +469,8 @@ class Tello(object):
         """Send_packet is used to send a command packet to the drone."""
         try:
             cmd = pkt.get_buffer()
-            self.sock.sendto(cmd, self.tello_addr)
+            send(self.base_pkt / Raw(load=cmd))
+            #self.sock.sendto(cmd, self.tello_addr)
             log.debug("send_packet: %s" % byte_to_hexstring(cmd))
         except socket.error as err:
             if self.state == self.STATE_CONNECTED:
